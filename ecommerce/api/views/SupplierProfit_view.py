@@ -6,7 +6,6 @@ from api.factories.service_factory import get_service_factory
 from api.permissions.permissions import RoleRequiredPermission
 from api.permissions.permission_required_for_action import permission_required_for_action
 from api.services.interfaces.ISupplierProfitService import ISupplierProfitService
-from injector import inject
 
 from api.validation.validation_request import ValidationRequest
 

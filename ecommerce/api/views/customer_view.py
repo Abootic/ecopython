@@ -5,7 +5,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 
 from api.dto.user_dto import UserDTO
-from api.services.interfaces.IcustomerService import ICustomerService
 from api.factories.service_factory import get_service_factory
 from api.permissions.permission_required_for_action import permission_required_for_action
 from api.permissions.permissions import RoleRequiredPermission

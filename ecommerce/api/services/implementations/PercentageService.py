@@ -1,5 +1,5 @@
 from api.Mapper.PercentageMapper import PercentageMapper
-from api.repositories.interfaces.IpercentageRepository import IPercentageRepository
+from api.repositories.interfaces.IPercentageRepository import IPercentageRepository
 from api.services.interfaces.IPercentageService import IPercentageService
 from api.dto.percentage_dto import PercentageDTO
 from api.wrpper.result import ConcreteResultT, ResultT
@@ -8,7 +8,7 @@ class PercentageService(IPercentageService):
     def __init__(self, percentage_repository: IPercentageRepository):
         self.percentage_repository = percentage_repository
 
-    def get_by_id(self, id: int) -> ResultT:
+    def get_by_id(self, Id: int) -> ResultT:
         try:
             percentage = self.percentage_repository.get_by_id(id)
             if percentage:

@@ -2,9 +2,10 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from api.dto.market_dto import MarketDTO
 from rest_framework.permissions import IsAuthenticated
-from api.factories.service_factory import get_service_factory  # Import ServiceFactory
 from api.permissions.permission_required_for_action import permission_required_for_action
 from api.permissions.permissions import RoleRequiredPermission
+from api.factories.service_factory import get_service_factory  # Import ServiceFactory
+from api.services.interfaces.IServiceManager import IServiceManager
 
 class MarketViewSet(viewsets.ViewSet):
 
@@ -16,15 +17,16 @@ class MarketViewSet(viewsets.ViewSet):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        # Get the service from the ServiceFactory
+        # Get the ServiceManager instance
         service_factory = get_service_factory()
-        self._service = service_factory.create_market_service(singleton=True)  # Get the singleton instance
+        self._service_manager = service_factory.create_service_manager(singleton=True)  # Get the singleton instance of ServiceManager
+        self._service = self._service_manager.market_service  # Access the MarketService through ServiceManager
 
     @permission_required_for_action({
         'list': [IsAuthenticated, RoleRequiredPermission],
     })
     def list(self, request):
-        res = self._service.all()
+        res = self._service_manager.market_service.all()
         if res.status.succeeded:
             response_data = {
                 'succeeded': res.status.succeeded,
@@ -33,7 +35,6 @@ class MarketViewSet(viewsets.ViewSet):
             }
             return Response(response_data, status=res.status.code)
         return Response({"error": res.status.message}, status=res.status.code)
-
 
     @permission_required_for_action({
         'retrieve': [IsAuthenticated, RoleRequiredPermission],

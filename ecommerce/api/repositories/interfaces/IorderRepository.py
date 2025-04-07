@@ -1,33 +1,14 @@
-from abc import ABC, abstractmethod
+from abc import  abstractmethod
 from datetime import date
 from typing import List, Optional
 from api.models.order import Order
 from api.models.product import Product
 from api.models.supplier import Supplier
 from api.models.supplierProfit import SupplierProfit
+from api.repositories.interfaces.IGenericRepository import IGenericRepository
 
-
-class IOrderRepository(ABC):
-
-    @abstractmethod
-    def get_by_id(self, order_id: int) -> Order:
-        pass
-
-    @abstractmethod
-    def all(self) -> List[Order]:
-        pass
-
-    @abstractmethod
-    def add(self, order: Order) -> Order:
-        pass
-
-    @abstractmethod
-    def update(self, order: Order) -> Order:
-        pass
-
-    @abstractmethod
-    def delete(self, order: Order) -> Order:
-        pass
+class IOrderRepository(IGenericRepository[Order]):
+    
     @abstractmethod
     def get_orders_by_customer(self, customer_id: int) -> List[Order]:
         pass
@@ -47,9 +28,11 @@ class IOrderRepository(ABC):
     @abstractmethod
     def get_orders_by_supplier(self, supplier: Supplier) -> List[Order]:
         pass
+
     @abstractmethod
     def get_supplier_profit_for_month(self, supplier_id: int) -> Optional[SupplierProfit]:
         pass
+
     @abstractmethod
-    def update_or_create_supplier_profit(self,supplier, order_profit):
+    def update_or_create_supplier_profit(self, supplier: Supplier, order_profit: float) -> float:
         pass

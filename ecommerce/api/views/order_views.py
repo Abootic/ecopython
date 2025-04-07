@@ -3,16 +3,14 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
 from api.dto.order_dto import OrderDTO
-from api.services.interfaces.IorderService import IOrderService
-from api.Mapper.OrderMapper import OrderMapper
+
 from rest_framework.decorators import action
 from api.factories.service_factory import ServiceFactory
 from api.permissions.permissions import RoleRequiredPermission
 from api.permissions.permission_required_for_action import permission_required_for_action
 from api.validation.validation_request import ValidationRequest
 from rest_framework.permissions import IsAuthenticated
-from api.dto.Supplier_dto import SupplierDTO
-from api.dto.supplierProfit_dto import SupplierProfitDTO
+
 from api.models.supplierProfit import SupplierProfit
 from api.models.percentage import Percentage
 

@@ -1,16 +1,20 @@
-from api.repositories.interfaces.IproductRepository import IProductRepository
+from api.repositories.interfaces.IProductRepository import IProductRepository
 from api.services.interfaces.IproductService import IProductService
 from api.dto.product_dto import ProductDTO
 from api.models.product import Product
-from typing import List
 from api.wrpper.result import ConcreteResultT, ResultT
 from api.Mapper.ProductMapper import ProductMapper
 
 
 class ProductService(IProductService):
 
-    def __init__(self, product_repository: IProductRepository):
+    def __init__(self, product_repository: IProductRepository = None):
+        if product_repository is None:
+            print("⚠️ DI Failed - Creating ProductRepository manually")
+            from api.repositories.implementations.productRepository import ProductRepository
+            product_repository = ProductRepository()
         self.product_repository = product_repository
+        print("✅ ProductService initialized with repository:", self.product_repository)
 
     def get_by_id(self, product_id: int) -> ResultT:
         try:
@@ -39,7 +43,7 @@ class ProductService(IProductService):
             # Create a product instance from the DTO
             pro=ProductMapper.to_model(product_dto)
           
-            added_product = self.product_repository.add(pro)
+            self.product_repository.add(pro)
             # Return success with the added product DTO
             return ConcreteResultT.success("added successfully")
         except Exception as e:

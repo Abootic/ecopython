@@ -1,49 +1,38 @@
 from datetime import datetime
-from typing import List  # ✅ Correct way to import
-
+from typing import List, Dict
+from django.db.models import Sum
 from api.models.order import Order
 from api.models.percentage import Percentage
 from api.models.supplierProfit import SupplierProfit
 from api.repositories.interfaces.ISupplierProfitRepository import ISupplierProfitRepository
-from django.db.models import Sum, QuerySet  # type: ignore
+from api.repositories.implementations.GenericRepository import GenericRepository
 
+class SupplierProfitRepository(GenericRepository[SupplierProfit], ISupplierProfitRepository):
 
-
-class SupplierProfitRepository(ISupplierProfitRepository):
-         
-         def all(self) -> QuerySet[SupplierProfit, SupplierProfit]:
-             return SupplierProfit.objects.all()
-
-         def get_total_profit_for_market(self, market_id, month):
-            if isinstance(month, str):
-                month = month[:7]  # Keep only "YYYY-MM" if extra data exists
-                month = datetime.strptime(month, "%Y-%m")  
-      
-            total_profit = Order.objects.filter(
-                product__supplier__market__id=market_id,  # Traverse Order -> Product -> Supplier -> Market
-                create_at__month=month.month,  # Filter orders by month
-                create_at__year=month.year  # Filter orders by year
-            ).aggregate(total_profit=Sum('price'))['total_profit'] or 0.0
-
-            return total_profit
-
-         def get_supplier_percentages(self, market_id):
+    def get_total_profit_for_market(self, market_id: int, month: datetime) -> float:
+        if isinstance(month, str):
+            month = datetime.strptime(month[:7], "%Y-%m")
             
-                return Percentage.objects.filter(
-                    supplier__market__id=market_id  # Traverse Percentage -> Supplier -> Market
-                )
+        return Order.objects.filter(
+            product__supplier__market__id=market_id,
+            create_at__month=month.month,
+            create_at__year=month.year
+        ).aggregate(total_profit=Sum('price'))['total_profit'] or 0.0
 
-         def update_or_create_supplier_profit(self, supplier, month, profit):
-                
-                supplier_profit, created = SupplierProfit.objects.update_or_create(
-                    supplier=supplier,
-                    month=month,
-                    defaults={'profit': profit}
-                )
+    def get_supplier_percentages(self, market_id: int) -> List[Dict]:
+        return list(Percentage.objects.filter(
+            supplier__market__id=market_id
+        ).values('supplier_id', 'percentage_value'))
 
-                if not created:
-                    # If the record exists, update the profit
-                    supplier_profit.profit += profit
-                    supplier_profit.save()
-
-                return supplier_profit
+    def update_or_create_supplier_profit(self, supplier, month: datetime, profit: float) -> SupplierProfit:
+        supplier_profit, created = SupplierProfit.objects.update_or_create(
+            supplier=supplier,
+            month=month,
+            defaults={'profit': profit}
+        )
+        
+        if not created:
+            supplier_profit.profit += profit
+            supplier_profit.save()
+            
+        return supplier_profit

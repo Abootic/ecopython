@@ -1,6 +1,3 @@
-from django.db.models import Sum
-from api.Mapper import SupplierProfitMapper
-from api.models import Product, Percentage
 from api.services.interfaces.ISupplierProfitService import ISupplierProfitService
 from api.repositories.interfaces.ISupplierProfitRepository import ISupplierProfitRepository
 from api.wrpper.result import ConcreteResultT, ResultT

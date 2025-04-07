@@ -1,17 +1,15 @@
 from api.Mapper.user_mapper import UserMapper
 from api.dto.user_dto import UserDTO
 from api.models.user import User
-from api.repositories.interfaces.IcustomerRepository import ICustomerRepository
-from api.repositories.interfaces.IuserRepository import IUserRepository
+from api.repositories.interfaces.ICustomerRepository import ICustomerRepository
+from api.repositories.interfaces.IUserRepository import IUserRepository
 from api.services.interfaces.IcustomerService import ICustomerService
 from api.dto.customer_dto import CustomerDTO
 from api.models.customer import Customer
-from typing import List
 from api.Mapper.CustomerMapper import CustomerMapper
 from api.wrpper.result import ConcreteResultT, ResultT
 import random
 import string
-import json
 
 
 class CustomerService(ICustomerService):
@@ -86,7 +84,7 @@ class CustomerService(ICustomerService):
                     )
 
                     # Save the customer to the repository
-                    customer = self.customer_repository.add(customer_model)
+                    self.customer_repository.add(customer_model)
 
                     # Return success result with the created customer
                     return ConcreteResultT.success("Customer added successfully")

@@ -1,12 +1,10 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from api.dto.percentage_dto import PercentageDTO
-from api.services.interfaces.IPercentageService import IPercentageService
 from api.permissions.permissions import RoleRequiredPermission
 from api.permissions.permission_required_for_action import permission_required_for_action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
-from injector import inject
 from rest_framework import status
 
 from api.factories.service_factory import get_service_factory  # Import your service factory

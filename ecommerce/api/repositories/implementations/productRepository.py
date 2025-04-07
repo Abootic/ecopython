@@ -1,33 +1,12 @@
-from api.repositories.interfaces.IproductRepository import IProductRepository
-from api.models.product import Product
 from typing import List
+from api.models.product import Product
+from api.repositories.interfaces.IProductRepository import IProductRepository
+from api.repositories.implementations.GenericRepository import GenericRepository
 
-class ProductRepository(IProductRepository):
-
-  def get_by_id(self, product_id: int) -> Product:
-    try:
-      return Product.objects.get(id=product_id)
-    except Product.DoesNotExist:
-      return None
-
-  def all(self) -> List[Product]:
-     return Product.objects.select_related('supplier').all() 
-  def add(self, product: Product) -> Product:
-    if product.pk is None:
-      product.save()
-      return product
-    else:
-      raise ValueError("Product already exists. Use update product to update an existing product.")
-
-  def update(self, product: Product) -> Product:
-    if product.pk is not None:
-      product.save()
-      return product
-    else:
-      raise ValueError("Product does not exist. Use add product to add a new product.")
-
-  def delete(self, product: Product) -> bool:
-    if product and product.pk is not None:
-      product.delete()
-      return True
-    return False
+class ProductRepository(GenericRepository[Product], IProductRepository):
+    
+    def all(self) -> List[Product]:
+        """Get all products with their suppliers pre-fetched"""
+        return list(self._model.objects.select_related('supplier').all())
+    
+    # All other methods (get_by_id, add, update, delete) are inherited from GenericRepository

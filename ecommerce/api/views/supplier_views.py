@@ -233,4 +233,3 @@ class SupplierViewSet(viewsets.GenericViewSet):
                 'data': {}
             }, status=500)
 
-

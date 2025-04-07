@@ -1,60 +1,23 @@
-from api.repositories.interfaces.IsupplierRepository import ISupplierRepository
+from typing import Optional
 from api.models.supplier import Supplier
-from typing import List
+from api.repositories.interfaces.ISupplierRepository import ISupplierRepository
+from api.repositories.implementations.GenericRepository import GenericRepository
 
-class SupplierRepository(ISupplierRepository):
-  def __init__(self):
-        self.model = Supplier  
-  def get_by_id(self, supplier_id: int) -> Supplier:
-    try:
-      return Supplier.objects.get(id=supplier_id)
-    except Supplier.DoesNotExist:
-      return None
+class SupplierRepository(GenericRepository[Supplier], ISupplierRepository):
 
-  def all(self) -> List[Supplier]:
-    return Supplier.objects.all()
+    def exists_by_code(self, code: str) -> bool:
+        return self._model.objects.filter(code=code).exists()
 
-  def add(self, supplier: Supplier) -> Supplier:
-    if supplier.pk is None:
-      supplier.save()
-      return supplier
-    else:
-      raise ValueError("supplier already exists. Use update supplier to update an existing supplier.")
+    def count_by_market_id(self, market_id: int) -> int:
+        return self._model.objects.filter(market_id=market_id).count()
 
-  def update(self, supplier: Supplier) -> Supplier:
-    if supplier.pk is not None:
-      supplier.save()
-      return supplier
-    else:
-      raise ValueError("supplier does not exist. Use add supplier to add a new supplier.")
+    def get_by_code(self, code: str) -> Optional[Supplier]:
+        return self._model.objects.filter(code=code).first()
 
-  def delete(self, supplier: Supplier) -> bool:
-    if supplier:
-      supplier.delete()
-      return True
-    return False
-  def exists_by_code(self, code: str) -> bool:
-        # Check if a supplier with the given code exists
-        return self.model.objects.filter(code=code).exists()
-  def count_by_market_id(self, market_id: int) -> int:
-        # This method returns the number of suppliers in the specified market
-        return Supplier.objects.filter(market_id=market_id).count()
-  def get_by_code(self, code: str) -> Supplier | None:
-    return Supplier.objects.filter(code=code).first()
-  def get_by_userId(self, userid: str) -> Supplier | None:
-      try:
-          user_id = int(userid)
-      except ValueError:
-          return None  # Handle invalid user_id format
-
-      # Fetch supplier with the associated user, checking if the user is correctly populated
-      supplier = Supplier.objects.select_related('user').filter(user_id=user_id).first()
-      
-      if supplier:
-          print(f"Supplier user: {supplier.user}")  # Debug print
-      else:
-          print(f"No supplier found for user_id: {user_id}")  # Debug print
-      
-      return supplier
-
-
+    def get_by_userId(self, userid: str) -> Optional[Supplier]:
+        try:
+            user_id = int(userid)
+            supplier = self._model.objects.select_related('user').filter(user_id=user_id).first()
+            return supplier
+        except ValueError:
+            return None

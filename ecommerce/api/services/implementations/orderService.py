@@ -1,6 +1,6 @@
 from api.Mapper.OrderMapper import OrderMapper
 from api.dto.order_dto import OrderDTO
-from api.repositories.interfaces.IorderRepository import IOrderRepository
+from api.repositories.interfaces.IOrderRepository import IOrderRepository
 from api.services.interfaces.IorderService import IOrderService
 from api.wrpper.result import ConcreteResultT, ResultT
 
@@ -70,8 +70,7 @@ class OrderService(IOrderService):
         try:
             orders = self.order_repository.get_orders_by_customer(customer_id)
             for v in orders:
-
-              print(f" in get_orders_by_customer in order service  ID: {v.id}, Product ID: {v.product_id}, Quantity: {v.quantity}, Price: {v.price}")
+                print(f" in get_orders_by_customer in order service  ID: {v.id}, Product ID: {v.product_id}, Quantity: {v.quantity}, Price: {v.price}")
             if orders:
                 order_dtos = [OrderMapper.convert_to_dto(order) for order in orders]
                 return ConcreteResultT.success(order_dtos)

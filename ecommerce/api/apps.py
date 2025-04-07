@@ -5,4 +5,5 @@ class ApiConfig(AppConfig):
     name = 'api'
 
     def ready(self):
-        import api.signals
+        # This initializes the Injector container
+        import api.signals  # Keep your signals

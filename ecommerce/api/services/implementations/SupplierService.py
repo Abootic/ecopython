@@ -1,8 +1,9 @@
+from injector import inject
 from api.Mapper.user_mapper import UserMapper
 from api.dto.user_dto import UserDTO
 from api.models.user import User
-from api.repositories.interfaces.IsupplierRepository import ISupplierRepository
-from api.repositories.interfaces.IuserRepository import IUserRepository
+from api.repositories.interfaces.ISupplierRepository import ISupplierRepository
+from api.repositories.interfaces.IUserRepository import IUserRepository
 from api.services.interfaces.ISupplierService import ISupplierService
 from api.dto.Supplier_dto import SupplierDTO
 from api.models.supplier import Supplier
@@ -11,11 +12,13 @@ from api.Mapper.SupplierMapper import SupplierMapper
 from api.wrpper.result import ConcreteResultT, ResultT
 import random
 import string
-import json
+
 
 
 class SupplierService(ISupplierService):
+    @inject
     def __init__(self, supplier_repository: ISupplierRepository, user_repository: IUserRepository):
+        print(f"Initializing SupplierService with {supplier_repository}, {user_repository}")
         self.supplier_repository = supplier_repository
         self.user_repository = user_repository
 
@@ -63,7 +66,6 @@ class SupplierService(ISupplierService):
             if isinstance(supplier_dto.code, tuple):
                 supplier_dto.code = supplier_dto.code[0]
 
-            json_str = json.dumps(supplier_dto.to_dict(), default=str)
 
             user_dto = supplier_dto.user_dto
             if not user_dto:
